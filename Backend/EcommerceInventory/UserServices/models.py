@@ -28,7 +28,7 @@ class Users(AbstractUser):
     last_device = models.CharField(max_length=50 , null=True , blank=True)
     last_ip = models.GenericIPAddressField(null=True , blank=True)
     currency = models.CharField(max_length=50 , null=True , blank=True , choices=[('USD','USD'),('INR','INR'),('EUR','EUR'),('GBP','GBP'),('AUD','AUD'),('CAD','CAD'),('SGD','SGD'),('MYR','MYR'),('AED','AED'),('NZD','NZD')])
-    domain_user_id = models.CharField(max_length=50 , null=True , blank=True)
+    domain_user_id = models.ForeignKey('self' , on_delete=models.CASCADE , null=True , blank=True)
     domain_name = models.CharField(max_length=50 , null=True , blank=True)
     plan_type = models.CharField(max_length=50 , null=True , blank=True , choices=[('free','free'),('basic','basic'),('standard','standard'),('premium','premium'),('enterprise','enterprise')])
     
@@ -59,6 +59,7 @@ class Modules(models.Model):
     is_active = models.BooleanField(default=True , null=True , blank=True)
     is_menu = models.BooleanField(default=True , null=True , blank=True)
     parent_id = models.ForeignKey('self' , on_delete=models.CASCADE , null=True , blank=True)
+    display_order = models.IntegerField(default=0)
     module_description = models.TextField(null=True , blank=True)
     module_url = models.CharField(max_length=100 , null=True , blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
