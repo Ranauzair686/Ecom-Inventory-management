@@ -16,7 +16,6 @@ class Users(AbstractUser):
     account_status = models.BooleanField(default=True , null=True , blank=True , choices=[('active','active'),('inactive','inactive'),('blocked','blocked')])
     role = models.CharField(max_length=50 , null=True , blank=True , choices=[('admin','admin'),('user','user') , ('supplier','supplier') , ('customer','customer') , ('staff','staff') , ('manager','manager')])
     dob = models.DateField(null=True , blank=True)
-    username = models.CharField(max_length=50 , null=True , blank=True)
     passowrd = models.CharField(max_length=50 , null=True , blank=True)
     social_media_links = models.TextField(null=True , blank=True)
     additional_details = models.JSONField(null=True , blank=True)

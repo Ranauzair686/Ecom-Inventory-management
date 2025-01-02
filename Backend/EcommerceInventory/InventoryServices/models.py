@@ -1,5 +1,4 @@
 from django.db import models
-from OrderServices.models import PurchaseOrder, PurchaseOrderItemInwardedLog, PurchaseOrderItems, SalesOrder
 from ProductServices.models import Products
 from UserServices.models import Users
 # Create your models here.
@@ -13,7 +12,7 @@ class Warehouse(models.Model):
     state = models.CharField(max_length=50 , null=True , blank=True)
     country = models.CharField(max_length=50 , null=True , blank=True)
     pincode = models.CharField(max_length=50 , null=True , blank=True)
-    warehouse_manger = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='warehouse_manger')
+    warehouse_manger = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='warehouse_manger_id')
     phone = models.CharField(max_length=50 , null=True , blank=True)
     email = models.EmailField(null=True , blank=True)
     status = models.CharField(max_length=50 , null=True , blank=True , choices=[('ACTIVE','ACTIVE'),('INACTIVE','INACTIVE')])
@@ -21,8 +20,8 @@ class Warehouse(models.Model):
     capacity = models.CharField(max_length=50 , null=True , blank=True , choices=[('SMALL','SMALL'),('MEDIUM','MEDIUM'),('LARGE','LARGE')])
     warehouse_type = models.CharField(max_length=50 , null=True , blank=True , choices=[('OWNED','OWNED'),('LEASED','LEASED')])
     additional_details = models.JSONField(null=True , blank=True)
-    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='domain_user_id')
-    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='added_by_user_id')
+    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='domain_user_id_warehouse')
+    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='added_by_user_id_warehouse')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -31,24 +30,24 @@ class Warehouse(models.Model):
 class RackAndShelvesAndFloor(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50 , null=True , blank=True)
-    warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True)
+    warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True , related_name='warehouse_id_rack_shelf_floor')
     rack = models.CharField(max_length=50 , null=True , blank=True)
     shelf = models.CharField(max_length=50 , null=True , blank=True)
     floor = models.CharField(max_length=50 , null=True , blank=True)
     additional_details = models.JSONField(null=True , blank=True)
-    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='rack_domain_user_id')
-    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='rack_added_by_user_id')
+    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='domain_user_id_rack_shelf_floor')
+    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='added_by_user_id_rack_shelf_floor')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
 
 class Inventory(models.Model):
     id = models.AutoField(primary_key=True)
-    purchase_order_id = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE , null=True , blank=True)
-    purchase_order_item_id = models.ForeignKey(PurchaseOrderItems, on_delete=models.CASCADE , null=True , blank=True)
-    purchase_order_item_inwarded_item_id = models.ForeignKey(PurchaseOrderItemInwardedLog, on_delete=models.CASCADE , null=True , blank=True , related_name='purchase_order_item_inwarded_item_id')
+    purchase_order_id = models.ForeignKey('OrderServices.PurchaseOrder', on_delete=models.CASCADE , null=True , blank=True)
+    purchase_order_item_id = models.ForeignKey('OrderServices.PurchaseOrderItems', on_delete=models.CASCADE , null=True , blank=True)
+    purchase_order_item_inwarded_item_id = models.ForeignKey('OrderServices.PurchaseOrderItemInwardedLog', on_delete=models.CASCADE , null=True , blank=True , related_name='purchase_order_item_inwarded_item_id')
     product_id = models.ForeignKey(Products , on_delete=models.CASCADE , null=True , blank=True)
-    warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True)
+    warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True , related_name='warehouse_id_inventory')
     rack_shelf_floor_id = models.ForeignKey(RackAndShelvesAndFloor, on_delete=models.CASCADE , null=True , blank=True)
     quantity = models.IntegerField() 
     mrp = models.CharField (max_length=50 , null=True , blank=True)
@@ -69,24 +68,24 @@ class Inventory(models.Model):
     stock_status = models.CharField(max_length=50 , null=True , blank=True , choices=[('IN_STOCK','IN_STOCK'),('OUT_OF_STOCK','OUT_OF_STOCK') , ('DAMAGED','DAMAGED') , ('LOST','LOST')])
     inward_type = models.CharField(max_length=50 , null=True , blank=True , choices=[('PURCHASE','PURCHASE'),('RETURN','RETURN')])
     addititon_details = models.JSONField(null=True , blank=True)
-    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='inventory_domain_user_id')
-    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='inventory_added_by_user_id')
+    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='domain_user_id_inventory')
+    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='added_by_user_id_inventory')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
 
 class InventryLog(models.Model):
     id = models.AutoField(primary_key=True)
-    po_id = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE , null=True , blank=True)
-    so_id = models.ForeignKey(SalesOrder, on_delete=models.CASCADE , null=True , blank=True , related_name='so_id')
+    po_id = models.ForeignKey('OrderServices.PurchaseOrder', on_delete=models.CASCADE , null=True , blank=True , related_name='po_id_inventorylog')
+    so_id = models.ForeignKey('OrderServices.SalesOrder', on_delete=models.CASCADE , null=True , blank=True , related_name='so_id_inventorylog')
     inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE , null=True , blank=True)
-    Warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True)
-    rack_shelf_floor_id = models.ForeignKey(RackAndShelvesAndFloor, on_delete=models.CASCADE , null=True , blank=True)
+    Warehouse_id = models.ForeignKey(Warehouse, on_delete=models.CASCADE , null=True , blank=True , related_name='Warehouse_id_inventorylog') 
+    rack_shelf_floor_id = models.ForeignKey(RackAndShelvesAndFloor, on_delete=models.CASCADE , null=True , blank=True , )
     quantity = models.IntegerField()
     status = models.CharField(max_length=50 , null=True , blank=True , choices=[('INWARD','INWARD'),('OUTWARD','OUTWARD') , ('DAMAGED','DAMAGED') , ('LOST','LOST') , ('EXPIRED','EXPIRED') , ('RETURN','RETURN') , ('ADJUSTMENT','ADJUSTMENT') , ('WAREHOUSE TRANSFER','WAREHOUSE TRANSFER')])
     additional_details = models.JSONField(null=True , blank=True)#
-    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='inventry_log_domain_user_id')
-    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='inventry_log_added_by_user_id')
+    domain_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='domain_user_id_idinventry_log')
+    added_by_user_id = models.ForeignKey(Users, on_delete=models.CASCADE , null=True , blank=True , related_name='added_by_user_id_inventry_log')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
